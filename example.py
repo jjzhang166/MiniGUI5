@@ -163,7 +163,7 @@ def keyHandler(key, value):
 
 
 def run():
-  print "Please run in root mode(for use your keyboard device)and maximize your terminal."
+    print "Please run in root mode(for use your keyboard device)and maximize your terminal."
     raw_input("Enter any key to continue")
     run_mode1()
 
