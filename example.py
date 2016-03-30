@@ -1,5 +1,5 @@
-# This program is an example of my own module MiniGUI.py
-# Writen by whuCanon, last modified on 2016/03/27
+# This program is a simple example of my own module MiniGUI.py
+# Writen by whuCanon, last modified on 2016/03/30
 
 import math
 import MiniGUI

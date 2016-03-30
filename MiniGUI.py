@@ -1,7 +1,7 @@
 #
 # Mini and Pseudo GUI based on command line (under Linux for now).
 #
-# Written by whuCanon, last modified on 2016/03/29.
+# Written by whuCanon, last modified on 2016/03/30.
 #
 # To use this module,you need meet the following condition: 
 # 1.  Laptop computer;  (otherwise you need change the keyboardDevName)
@@ -83,12 +83,13 @@ class Canvas:
             print tmp_str
 
     def draw_line(self, text, pos, isUpright = False):
-        ''' 
-        You can use this function to draw a string as a line 
-        at any position uprightly or flatly. The position 
-        example: canvas.draw_line("the text you want to print",
-                 [position_x, position_y])
-        '''
+        ''' You can use this function to draw a string as a line 
+            at any position uprightly or flatly. The position is a 
+            list with two paradises: x and y coordinate. isUpright
+            is a boolean paradise: True for drawing uprightly 
+            while False for drawing flatly.
+            example: canvas.draw_line("the text you want to print",
+                     [position_x, position_y])'''
         cursor_pos = pos
         for ch in text:
             self.tupMatrix[tuple(cursor_pos)] = ch
@@ -98,12 +99,11 @@ class Canvas:
                 cursor_pos[0] += 1
 
     def draw_image(self, text, pos, angle = 0):
-        '''
-        You can use this function to draw a text image at any position.
-
-        example: canvas.draw_image("the text of image in type matrix", pos,
-                 rotation's_angle)
-        '''
+        ''' You can use this function to draw a text image at any position.
+            You should take notice of that the pos is the center position 
+            of your text image and the angle recieved in radians.
+            example: canvas.draw_image("the text of image in type matrix", pos,
+                     rotation's_angle)'''
         image_dict = {}
         image_width = 0
         image_height = 0
@@ -126,7 +126,6 @@ class Canvas:
         self.tupMatrix.update(image_dict)
 
     def rotate(self, image_dict, width, height, pos, angle):
-        ''' rotate the image '''
         tmp_dict = {}
         tmp_dict.update(image_dict)
         o_pos = [pos[0] + width / 2, pos[1] + height / 2]
@@ -139,11 +138,16 @@ class Canvas:
             image_dict[(o_x_ + o_pos[0], o_y_ + o_pos[1])] = tmp_dict[point]
 
     def clear(self):
-        ''' clear the virtual screen per frame '''
         self.tupMatrix.clear()
 
     def update(self):
-        ''' update and print the real screen '''
+        ''' In this function, firstly it handles the position
+            that go beyond the broad. Then it draws the virtual screen 
+            and clear the old screen. Finally let main program thread
+            sleep a while to make a steady fresh rate and release CPU 
+            source to the keyboard listener function.
+            After your drawing is done, you need to use this function to 
+            refresh the virtual screen to display. '''
         tmp_dict = {}
         tmp_dict.update(self.tupMatrix)
         for key in tmp_dict:
@@ -164,7 +168,8 @@ class Canvas:
 
 
 class Tablet(Canvas):
-    ''' usage: tablet = MiniGUI.Tablet(rows, columns) '''
+    ''' A subclass of Canvas to draw text on large pattern.
+        example: tablet = MiniGUI.Tablet(rows, columns) '''
     FONT_WIDTH = 9      # the max width of the character
     FONT_HEIGHT = 10    # the max height of the character
     # some character's type matrix, you can add yourself
@@ -204,7 +209,8 @@ class Tablet(Canvas):
         Canvas.__init__(self, cols * self.FONT_WIDTH + 1, rows * self.FONT_HEIGHT + 1)
 
     def draw_text(self, text, pos = [0, 0]):
-        ''' usage: tablet.draw_text("this must be in the dict!", [position_x, position_y]) '''
+        ''' Draw a string on large pattern. The position is optional.
+        example: tablet.draw_text("this must be in the dict!", [position_x, position_y]) '''
         str_len = len(text)
         for y in range(self.rows):
             for x in range(self.cols):
@@ -245,9 +251,27 @@ def getKeyEvent(keyHandler):
             for event in dev.read():
                 if (event.value == 1 or event.value == 0) and event.code != 0:
                     keyHandler(ecodes.KEY[event.code], event.value)
+                    print ecodes.KEY[event.code]
         except Exception:
             pass
 
 
 def setKeyHandler(keyHandler):
+    ''' This function can set a keyboard event handler of your program.
+        The paradise keyHandler is the keyboard handler in your program 
+        and you need define this function as following:
+            def keyHandler_name(key, value):
+        Then call MiniGUI.setKeyHandler(keyHandler_name) to set. And the
+        function you define will be called automaticlly when you press down
+        a key or lift up a key.
+        The paradise key is your key input while program running and value
+        is if you press down or lift up. for example, if you press down key 'a',
+        the the function you define will be call as key = 'KEY_A' and value = 1,
+        then you lift it up it will be call as key = 'KEY_A' and value = 0.
+        Here are some correspondence between the key you input and the function gives:
+            'a' or 'A' == 'KEY_A';
+            '1'        == 'KEY_1';
+            'Esc'      == 'KEY_ESC';
+            'leftShift'== 'KEY_LEFTSHIFT';
+            ... and so on. '''
     thread.start_new_thread(getKeyEvent, (keyHandler, ))
