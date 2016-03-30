@@ -102,8 +102,8 @@ class Canvas:
         ''' You can use this function to draw a text image at any position.
             You should take notice of that the pos is the center position 
             of your text image and the angle recieved in radians.
-            example: canvas.draw_image("the text of image in type matrix", pos,
-                     rotation's_angle)'''
+            The image_text need to be transform using some software.
+            example: canvas.draw_image("image_text", pos, rotation's_angle)'''
         image_dict = {}
         image_width = 0
         image_height = 0
@@ -164,6 +164,7 @@ class Canvas:
         os.system('clear')
         self.draw()
         self.clear()
+        print "Ctrl+C to exit"
         time.sleep(self.REFRESH_PERIOD)
 
 
@@ -250,8 +251,12 @@ def getKeyEvent(keyHandler):
         try:
             for event in dev.read():
                 if (event.value == 1 or event.value == 0) and event.code != 0:
+                    if ecodes.KEY[event.code] == 'KEY_LEFTCTRL':
+                        if event.value == 1:
+                            os.system('stty echo')
+                        else:
+                            os.system('stty -echo')
                     keyHandler(ecodes.KEY[event.code], event.value)
-                    print ecodes.KEY[event.code]
         except Exception:
             pass
 
@@ -274,4 +279,5 @@ def setKeyHandler(keyHandler):
             'Esc'      == 'KEY_ESC';
             'leftShift'== 'KEY_LEFTSHIFT';
             ... and so on. '''
+    os.system('stty -echo')
     thread.start_new_thread(getKeyEvent, (keyHandler, ))
