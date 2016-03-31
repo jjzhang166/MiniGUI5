@@ -20,15 +20,9 @@ def keyHandler(key, value):
 
 # load image_text
 image_text = {}
-f = open("./data/bus.txt", 'r')
-image_text['bus'] = f.read()
-f.close()
-f = open("./data/wheel.txt", 'r')
-image_text['wheel'] = f.read()
-f.close()
+image_text['bus'] = MiniGUI.loadImageText("./data/bus.txt")
+image_text['wheel'] = MiniGUI.loadImageText("./data/wheel.txt")
 
-print "Please maximize your terminal run and in root mode(for use your keyboard device)."
-raw_input("Enter any key to continue")
 canvas = MiniGUI.Canvas(PAINT_WIDTH, PAINT_HEIGHT)
 MiniGUI.setKeyHandler(keyHandler)
 

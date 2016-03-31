@@ -28,6 +28,7 @@ This module exports the following class and functions:
     Tablet:     A subclass of Canvas to draw text on large pattern.
         draw_text:  Draw a string on large pattern.
     setKeyHandler:  Set a keyboard event handler function thread.
+    loadImageText:  Load an image text from disk
 
 Some public attributes:
     (Canvas)REFRESH_PERIOD:  The refresh period of the virtual screen.
@@ -53,10 +54,15 @@ import math
 import time
 import thread
 from select import select
-from evdev import ecodes
-from evdev import InputDevice
+try:
+    from evdev import ecodes
+    from evdev import InputDevice
+except Exception, e:
+    print e + "\nPlease Install evdev module, or you can't use keyboard conctroller !"
 
 keyboardDevName = "AT Translated Set 2 keyboard"
+print "Please maximize your terminal run and in root mode(for use your keyboard device)."
+raw_input("Enter any key to continue")
 
 class Canvas:
     ''' The class of virtual screen. You must create a Canvas 
@@ -244,7 +250,8 @@ def getKeyEvent(keyHandler):
         namePath = deviceFilePath + i + '/device/name'
         if os.path.isfile(namePath) and keyboardDevName in file(namePath).read():
             keyboardDevPath = "/dev/input/" + str(i)
-
+    
+    os.system('stty echo')
     dev = InputDevice(keyboardDevPath)
     while True:
         select([dev], [], [], Canvas.REFRESH_PERIOD)
@@ -279,5 +286,13 @@ def setKeyHandler(keyHandler):
             'Esc'      == 'KEY_ESC';
             'leftShift'== 'KEY_LEFTSHIFT';
             ... and so on. '''
-    os.system('stty -echo')
     thread.start_new_thread(getKeyEvent, (keyHandler, ))
+
+
+def loadImageText(filePath):
+    ''' This function load an image-text file from your disk and retrn 
+        the file's content as a string. '''
+    f = open(filePath, 'r')
+    tmp = f.read()
+    f.close()
+    return tmp
